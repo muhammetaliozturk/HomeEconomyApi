@@ -20,7 +20,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddDbContext<HomeEconomyDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DBContextConnection"),
-    assembly => assembly.MigrationsAssembly("HomeEconomyApi.Web")));
+    assembly => assembly.MigrationsAssembly("HomeEconomy.Web")));
 
 //builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 //{
@@ -45,6 +45,19 @@ var mapperConfig = new MapperConfiguration(mc =>
 
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: allowedOrigins,
+                      builder =>
+                      {
+                          builder
+                            .WithOrigins("http://localhost:8080")
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials();
+                      });
+});
 
 //builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 //builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
@@ -117,17 +130,6 @@ builder.Services.AddSwaggerGen(option =>
 //        IssuerSigningKey = new SymmetricSecurityKey(secretKey)
 //    };
 //});
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: allowedOrigins,
-                      builder =>
-                      {
-                          builder.WithOrigins("http://localhost:8080")
-                            .AllowAnyMethod()
-                            .AllowAnyHeader();
-                      });
-});
 
 var app = builder.Build();
 
